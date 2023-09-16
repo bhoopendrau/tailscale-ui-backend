@@ -1,4 +1,4 @@
-package backend
+package forms
 
 type UserSignup struct {
 	Name     string `json:"name" binding:"required"`

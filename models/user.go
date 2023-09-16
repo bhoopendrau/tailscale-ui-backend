@@ -9,8 +9,8 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 	"github.com/satori/go.uuid"
-	"github.com/vsouza/go-gin-boilerplate/db"
-	"github.com/vsouza/go-gin-boilerplate/forms"
+	"github.com/bhoopendrau/tailscale-ui-backend/db"
+	"github.com/bhoopendrau/tailscale-ui-backend/forms"
 )
 
 type User struct {

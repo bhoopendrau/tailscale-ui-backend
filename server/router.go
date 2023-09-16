@@ -2,8 +2,8 @@ package server
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/vsouza/go-gin-boilerplate/controllers"
-	"github.com/vsouza/go-gin-boilerplate/middlewares"
+	"github.com/bhoopendrau/tailscale-ui-backend/controllers"
+	"github.com/bhoopendrau/tailscale-ui-backend/middlewares"
 )
 
 func NewRouter() *gin.Engine {

@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/vsouza/go-gin-boilerplate/config"
-	"github.com/vsouza/go-gin-boilerplate/db"
-	"github.com/vsouza/go-gin-boilerplate/server"
+	"github.com/bhoopendrau/tailscale-ui-backend/config"
+	"github.com/bhoopendrau/tailscale-ui-backend/db"
+	"github.com/bhoopendrau/tailscale-ui-backend/server"
 )
 
 func main() {
