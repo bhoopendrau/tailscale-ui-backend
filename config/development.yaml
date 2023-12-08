@@ -1,1 +1,3 @@
 server.port: ":5000"
+http.auth.key: "demo-key"
+http.auth.secret: "demo-secret"

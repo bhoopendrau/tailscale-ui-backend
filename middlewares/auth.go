@@ -3,26 +3,33 @@ package middlewares
 import (
 	"strings"
 
-	"github.com/gin-gonic/gin"
 	"github.com/bhoopendrau/tailscale-ui-backend/config"
+	"github.com/gin-gonic/gin"
 )
+
+type GeneralResponse struct {
+	Message string `json:"message"`
+	Reason  string `json:"reason"`
+}
 
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		config := config.GetConfig()
 		reqKey := c.Request.Header.Get("X-Auth-Key")
 		reqSecret := c.Request.Header.Get("X-Auth-Secret")
+		configKey := config.GetString("http.auth.key")
+		configSecret := config.GetString("http.auth.secret")
 
-		var key string
-		var secret string
-		if key = config.GetString("http.auth.key"); len(strings.TrimSpace(key)) == 0 {
-			c.AbortWithStatus(500)
+		if len(strings.TrimSpace(reqKey)) == 0 {
+			c.JSON(401, GeneralResponse{Message: "Please provide Auth key", Reason: "Unauthorised"})
+			return
 		}
-		if secret = config.GetString("http.auth.secret"); len(strings.TrimSpace(secret)) == 0 {
-			c.AbortWithStatus(401)
+		if len(strings.TrimSpace(reqSecret)) == 0 {
+			c.JSON(401, GeneralResponse{Message: "Please provide Auth secret", Reason: "Unauthorised"})
+			return
 		}
-		if key != reqKey || secret != reqSecret {
-			c.AbortWithStatus(401)
+		if configKey != reqKey || configSecret != reqSecret {
+			c.JSON(401, GeneralResponse{Message: "Invalid credentials", Reason: "Unauthorised"})
 			return
 		}
 		c.Next()

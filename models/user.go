@@ -8,9 +8,9 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
-	"github.com/satori/go.uuid"
 	"github.com/bhoopendrau/tailscale-ui-backend/db"
 	"github.com/bhoopendrau/tailscale-ui-backend/forms"
+	uuid "github.com/satori/go.uuid"
 )
 
 type User struct {
@@ -39,7 +39,7 @@ func (h User) Signup(userPayload forms.UserSignup) (*User, error) {
 	}
 	item, err := dynamodbattribute.MarshalMap(user)
 	if err != nil {
-		errors.New("error when try to convert user data to dynamodbattribute")
+		// errors.New("error when try to convert user data to dynamodbattribute")
 		return nil, err
 	}
 	params := &dynamodb.PutItemInput{
