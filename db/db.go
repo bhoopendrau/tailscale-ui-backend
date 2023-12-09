@@ -1,25 +1,25 @@
 package db
 
 import (
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"context"
+
 	"github.com/bhoopendrau/tailscale-ui-backend/config"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-var db *dynamodb.DynamoDB
+var db *mongo.Client
 
 func Init() {
 	c := config.GetConfig()
-	db = dynamodb.New(session.New(&aws.Config{
-		Region:      aws.String(c.GetString("db.region")),
-		Credentials: credentials.NewEnvCredentials(),
-		Endpoint:    aws.String(c.GetString("db.endpoint")),
-		DisableSSL:  aws.Bool(c.GetBool("db.disable_ssl")),
-	}))
+	uri := c.GetString("db.uri")
+	var err error
+	db, err = mongo.Connect(context.TODO(), options.Client().ApplyURI(uri))
+	if err != nil {
+		panic(err)
+	}
 }
 
-func GetDB() *dynamodb.DynamoDB {
+func GetDB() *mongo.Client {
 	return db
 }

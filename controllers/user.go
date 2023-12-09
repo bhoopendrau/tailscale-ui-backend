@@ -1,9 +1,12 @@
 package controllers
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/bhoopendrau/tailscale-ui-backend/models"
+	"fmt"
 	"net/http"
+
+	"github.com/bhoopendrau/tailscale-ui-backend/forms"
+	"github.com/bhoopendrau/tailscale-ui-backend/models"
+	"github.com/gin-gonic/gin"
 )
 
 type UserController struct{}
@@ -23,5 +26,20 @@ func (u UserController) Retrieve(c *gin.Context) {
 	}
 	c.JSON(http.StatusBadRequest, gin.H{"message": "bad request"})
 	c.Abort()
-	return
+}
+
+func (u UserController) SignUp(c *gin.Context) {
+	// Call BindJSON to bind the received JSON to
+	// newAlbum.
+	var useForm forms.UserSignup
+	if err := c.BindJSON(&useForm); err != nil {
+		fmt.Println(err)
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request body!", "error": err})
+		return
+	}
+	if _, err := userModel.Signup(useForm); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Unable to create document!", "error": err})
+		return
+	}
+
 }

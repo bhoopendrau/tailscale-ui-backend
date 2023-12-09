@@ -1,16 +1,13 @@
 package models
 
 import (
-	"errors"
-	"log"
+	"context"
 	"time"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/dynamodb"
-	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 	"github.com/bhoopendrau/tailscale-ui-backend/db"
 	"github.com/bhoopendrau/tailscale-ui-backend/forms"
 	uuid "github.com/satori/go.uuid"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type User struct {
@@ -26,6 +23,7 @@ type User struct {
 
 func (h User) Signup(userPayload forms.UserSignup) (*User, error) {
 	db := db.GetDB()
+	usersCollection := db.Database("testing").Collection("users")
 	id := uuid.NewV4()
 	user := User{
 		ID:        id.String(),
@@ -37,42 +35,20 @@ func (h User) Signup(userPayload forms.UserSignup) (*User, error) {
 		Active:    true,
 		UpdatedAt: time.Now().UnixNano(),
 	}
-	item, err := dynamodbattribute.MarshalMap(user)
+	_, err := usersCollection.InsertOne(context.TODO(), &user)
 	if err != nil {
 		// errors.New("error when try to convert user data to dynamodbattribute")
 		return nil, err
 	}
-	params := &dynamodb.PutItemInput{
-		Item:      item,
-		TableName: aws.String("TableUsers"),
-	}
-	if _, err := db.PutItem(params); err != nil {
-		log.Println(err)
-		return nil, errors.New("error when try to save data to database")
-	}
-	return &user, nil
+	return nil, nil
 }
 
 func (h User) GetByID(id string) (*User, error) {
 	db := db.GetDB()
-	params := &dynamodb.GetItemInput{
-		Key: map[string]*dynamodb.AttributeValue{
-			"user_id": {
-				S: aws.String(id),
-			},
-		},
-		TableName:      aws.String("TableUsers"),
-		ConsistentRead: aws.Bool(true),
-	}
-	resp, err := db.GetItem(params)
-	if err != nil {
-		log.Println(err)
+	usersCollection := db.Database("testing").Collection("users")
+	var result *User
+	if err := usersCollection.FindOne(context.TODO(), bson.M{"id": id}).Decode(&result); err != nil {
 		return nil, err
 	}
-	var user *User
-	if err := dynamodbattribute.UnmarshalMap(resp.Item, &user); err != nil {
-		log.Println(err)
-		return nil, err
-	}
-	return user, nil
+	return result, nil
 }
